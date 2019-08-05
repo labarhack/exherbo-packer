@@ -1,0 +1,13 @@
+iso/
+**/*.iso
+**/*.box
+**/*.gz
+**/*.qcow2
+packer_cache/
+packer_cache/*
+packer_cache/**
+artifacts/
+artifacts/*
+exherbo-kvm/
+exherbo-vbox/
+

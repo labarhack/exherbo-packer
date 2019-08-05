@@ -1,0 +1,143 @@
+{
+  "variables": {
+    "kernel" : "5.2.5",
+    "device" : "/dev/sda",
+    "hostname":"E1"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "name": "virtualbox-iso",
+      "boot_command": [
+        "<enter><wait10>",
+        "<enter><wait10><wait10>",
+        "passwd<enter><wait>",
+        "packer<enter><wait>packer<enter>",
+        "htop <enter>"
+      ],
+      "boot_wait": "2s",
+      "headless": true,
+      "iso_url": "file:///home/eric/Perso/packer-imgs/Exherbo/iso/systemrescuecd-6.0.3.iso",
+      "iso_checksum": "6ac22a9cbafdf20da92cba0f1b4e86b6",
+      "iso_checksum_type": "md5",
+      "output_directory": "exherbo-vbox",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "ssh_username": "root",
+      "ssh_password": "packer",
+      "guest_os_type": "Linux_64",
+      "disk_size": 20000,
+      "cpus": 8,
+      "memory": 8096,
+      "hard_drive_interface": "sata",
+      "vm_name": "exherbo"
+    },
+    {
+      "type": "qemu",
+      "name": "qemu",
+      "iso_url": "file:///home/eric/Perso/packer-imgs/Exherbo/iso/systemrescuecd-6.0.3.iso",
+      "iso_checksum": "6ac22a9cbafdf20da92cba0f1b4e86b6",
+      "iso_checksum_type": "md5",
+      "output_directory": "exherbo-kvm",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "disk_size": 20000,
+      "format": "qcow2",
+      "cpus": 8,
+      "memory": 8096,
+      "accelerator": "kvm",
+      "ssh_username": "root",
+      "ssh_password": "packer",
+      "ssh_timeout": "20m",
+      "vm_name": "exherbo.qcow2",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "boot_wait": "2s",
+      "headless": true,
+      "boot_command": [
+        "<enter><wait10>",
+        "<enter><wait10><wait10>",
+        "passwd<enter><wait>",
+        "packer<enter><wait>packer<enter>",
+        "htop <enter>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "PACKER_KERNEL={{user `kernel`}}",
+        "PACKER_HOSTNAME={{user `hostname`}}"
+      ],
+      "scripts": [
+        "scripts/check.sh",
+        "scripts/partition.sh",
+        "scripts/check_envs.sh",
+        "scripts/stage.sh",
+        "scripts/chroot_prepare.sh",
+        "scripts/chroot_env.sh",
+        "scripts/chroot_kernel.sh",
+        "scripts/chroot_paludis.sh",
+        "scripts/chroot_fstab.sh",
+        "scripts/chroot_boot.sh",
+        "scripts/chroot_user.sh",
+        "scripts/chroot_hostname.sh",
+        "scripts/chroot_hosts.sh",
+        "scripts/chroot_network.sh",
+        "scripts/chroot_ssh.sh"
+      ],
+      "type": "shell"
+    },
+   {
+     "environment_vars": [
+       "PACKER_KERNEL={{user `kernel`}}",
+       "PACKER_HOSTNAME={{user `hostname`}}"
+     ],
+     "scripts": [
+       "scripts/chroot_vbox_additions.sh"
+     ],
+     "type": "shell",
+     "only" : ["virtualbox-iso"]
+   },
+   {
+     "environment_vars": [
+       "PACKER_KERNEL={{user `kernel`}}",
+       "PACKER_HOSTNAME={{user `hostname`}}"
+     ],
+     "scripts": [
+       "scripts/chroot_cleanup.sh"
+     ],
+     "type": "shell"
+   }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "vagrantfile_template": "vagrantfile.template",
+        "output": "./artefacts/exherbo-x86_64-vbox.box",
+        "keep_input_artifact": true,
+        "only" : ["virtualbox-iso"]
+      } ,
+      {
+        "type": "compress",
+        "output": "./artefacts/exherbo-x86_64-vbox.gz",
+        "compression_level": "6",
+        "keep_input_artifact": true,
+        "only" : ["virtualbox-iso"]
+      },
+     {
+       "type": "vagrant",
+       "vagrantfile_template": "vagrantfile.template",
+       "output": "./artefacts/exherbo-x86_64-kvm.box",
+       "keep_input_artifact": true,
+       "only" : ["qemu"]
+     } ,
+     {
+       "type": "compress",
+       "output": "./artefacts/exherbo-x86_64-kvm.gz",
+       "compression_level": "6",
+       "keep_input_artifact": true,
+       "only" : ["qemu"]
+     }
+    ]
+  ]
+}
