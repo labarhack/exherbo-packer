@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $INSTALL_DOCKER="true" ]
+if [ "$INSTALL_DOCKER" = "true" ]
 then
 
   source /mnt/env.sh

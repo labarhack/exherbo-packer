@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [ $INSTALL_JAVA="true" ]
+if [ "$INSTALL_JAVA" = "true" ]
 then
 chroot /mnt /bin/bash -ex<<EOF
 
 cave resolve -x repository/desktop
 cave resolve -x repository/media
-#cave resolve -x repository/java 
+cave resolve -x repository/java 
 #cave resolve -x repository/x11
 
 cave sync

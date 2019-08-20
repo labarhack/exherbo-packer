@@ -3,7 +3,7 @@
     "kernel" : "5.2.5",
     "device" : "/dev/sda",
     "hostname" : "E1",
-    "with_docker": "true",
+    "with_docker": "false",
     "with_java": "false"
   },
   "builders": [
@@ -115,6 +115,7 @@
      ],
      "scripts": [
        "scripts/optionals/chroot_docker.sh",
+       "scripts/optionals/chroot_java.sh",
        "scripts/chroot_cleanup.sh"
      ],
      "type": "shell"

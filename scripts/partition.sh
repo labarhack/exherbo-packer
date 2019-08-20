@@ -49,7 +49,9 @@ export INSTALL_JAVA=\"${PACKER_WITH_JAVA}\"
 "> /mnt/env.sh
 
 cat /mnt/env.sh
-
+# source /mnt/env.sh
+# [[ "$INSTALL_JAVA" = "true" ]] && echo YES || echo "NO"
+# sleep 60
 #cat <<EOF > /mnt/etc/fstab
 ## <fs>       <mountpoint>    <type>    <opts>      <dump/pass>
 #/dev/vda2    /           ext4 defaults    0 0
