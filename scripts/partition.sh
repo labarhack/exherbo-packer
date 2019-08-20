@@ -44,6 +44,8 @@ cat  <<< "
 export INSTALL_DEVICE=\"${INSTALL_DEVICE}\"    
 export INSTALL_KERNEL=\"${PACKER_KERNEL}\"
 export INSTALL_HOSTNAME=\"${PACKER_HOSTNAME}\"
+export INSTALL_DOCKER=\"${PACKER_WITH_DOCKER}\"
+export INSTALL_JAVA=\"${PACKER_WITH_JAVA}\"
 "> /mnt/env.sh
 
 cat /mnt/env.sh

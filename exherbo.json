@@ -2,7 +2,9 @@
   "variables": {
     "kernel" : "5.2.5",
     "device" : "/dev/sda",
-    "hostname":"E1"
+    "hostname" : "E1",
+    "with_docker": "true",
+    "with_java": "false"
   },
   "builders": [
     {
@@ -25,7 +27,7 @@
       "ssh_username": "root",
       "ssh_password": "packer",
       "guest_os_type": "Linux_64",
-      "disk_size": 20000,
+      "disk_size": 20,
       "cpus": 8,
       "memory": 8096,
       "hard_drive_interface": "sata",
@@ -62,10 +64,17 @@
     }
   ],
   "provisioners": [
-    {
+      {
+        "destination": "/tmp/patch_config",
+        "source": "./files/patch_config",
+        "type": "file"
+      },
+      {
       "environment_vars": [
         "PACKER_KERNEL={{user `kernel`}}",
-        "PACKER_HOSTNAME={{user `hostname`}}"
+        "PACKER_HOSTNAME={{user `hostname`}}",
+        "PACKER_WITH_DOCKER={{user `with_docker`}}",
+        "PACKER_WITH_JAVA={{user `with_java`}}"
       ],
       "scripts": [
         "scripts/check.sh",
@@ -89,7 +98,8 @@
    {
      "environment_vars": [
        "PACKER_KERNEL={{user `kernel`}}",
-       "PACKER_HOSTNAME={{user `hostname`}}"
+       "PACKER_HOSTNAME={{user `hostname`}}",
+        "PACKER_WITH_DOCKER={{user `with_docker`}}"
      ],
      "scripts": [
        "scripts/chroot_vbox_additions.sh"
@@ -100,9 +110,11 @@
    {
      "environment_vars": [
        "PACKER_KERNEL={{user `kernel`}}",
-       "PACKER_HOSTNAME={{user `hostname`}}"
+       "PACKER_HOSTNAME={{user `hostname`}}",
+        "PACKER_WITH_DOCKER={{user `with_docker`}}"
      ],
      "scripts": [
+       "scripts/optionals/chroot_docker.sh",
        "scripts/chroot_cleanup.sh"
      ],
      "type": "shell"

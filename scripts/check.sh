@@ -3,6 +3,15 @@
 echo "SET UP: choosed kernel $PACKER_KERNEL"
 echo "SET UP: hostname: $PACKER_HOSTNAME"
 
+if [ -e /tmp/patch_config ]; then
+  echo "patch_config found"
+else
+  echo "no patch_config file found "
+  ls -la /tmp
+  exit 1
+fi
+
+cat /tmp/patch_config
 
 if [ -e /dev/vda ]; then
  export DEVICE="/dev/vda"
